@@ -1,0 +1,159 @@
+﻿definitions:
+  main.Role:
+    properties:
+      id:
+        description: Key
+        type: integer
+      name:
+        description: 角色名稱
+        type: string
+      skills:
+        description: 會使用的招式
+        items:
+          $ref: '#/definitions/main.RoleSkill'
+        type: array
+      summary:
+        description: 介紹
+        type: string
+    type: object
+  main.RoleSkill:
+    properties:
+      id:
+        description: key
+        type: integer
+      name:
+        description: 招式名稱
+        type: string
+      type:
+        description: 招式分類
+        type: string
+    type: object
+  main.RoleVM:
+    properties:
+      id:
+        description: Key
+        type: integer
+      name:
+        description: 角色名稱
+        type: string
+      summary:
+        description: 介紹
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: 管理布袋戲角色的資料，每一個角色都有自己的角色名稱、簡介以及招式。
+  title: 布袋戲角色管理布袋戲
+  version: "1.0"
+paths:
+  /role:
+    get:
+      consumes:
+      - application/json
+      description: 取得所有角色資訊
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Role'
+            type: array
+      summary: 取得所有角色資訊
+    post:
+      consumes:
+      - application/json
+      description: 新增單一角色資訊
+      parameters:
+      - description: 角色資料
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/main.Role'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Role'
+      summary: 新增單一角色資訊
+  /role/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 刪除單一角色資訊
+      parameters:
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: "204"
+        "404":
+          description: 404 not found
+          schema:
+            type: string
+      summary: 刪除單一角色資訊
+    get:
+      consumes:
+      - application/json
+      description: 取得單一角色資訊
+      parameters:
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Role'
+        "400":
+          description: 400 StatusBadRequest
+          schema:
+            type: string
+        "404":
+          description: 404 not found
+          schema:
+            type: string
+      summary: 取得單一角色資訊
+    put:
+      consumes:
+      - application/json
+      description: 修改單一角色資訊
+      parameters:
+      - description: 角色資料
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/main.RoleVM'
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Role'
+        "404":
+          description: 404 not found
+          schema:
+            type: string
+      summary: 修改單一角色資訊
+swagger: "2.0"

@@ -55,7 +55,13 @@ func GetOne(c *gin.Context) {
 
 // 新增資料
 func Post(c *gin.Context) {
-
+	var r Role
+	if err := c.ShouldBind(&r); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		return
+	}
+	Data = append(Data, r)
+	c.JSON(http.StatusOK, gin.H{"message": r.Name + " is insert"})
 }
 
 type RoleVM struct {
@@ -66,10 +72,45 @@ type RoleVM struct {
 
 // 更新資料, 更新角色名稱與介紹
 func Put(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		return
+	}
 
+	var info RoleVM
+	err = c.BindJSON(&info)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Printf("info[Name]: %#v\n", info.Name)
+	fmt.Printf("info[Summary]: %#v\n", info.Summary)
+
+	for i := range Data {
+		if Data[i].ID == uint(id) {
+			Data[i].Name = info.Name
+			Data[i].Summary = info.Summary
+			break
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "ID " + strconv.Itoa(id) + " is updated"})
 }
 
 // 刪除資料
 func Delete(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		return
+	}
 
+	for i := range Data {
+		if Data[i].ID == uint(id) {
+			Data = append(Data[:i], Data[i+1:]...)
+			break
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "ID " + strconv.Itoa(id) + " is deleted"})
 }

@@ -1,9 +1,13 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/thedevsaddam/gojsonq"
 )
 
 func main() {
@@ -20,7 +24,7 @@ func main() {
 
 	router.DELETE("/role/:id", Delete)
 
-	router.Run(":8080")
+	router.Run(":8088")
 }
 
 // 取得全部資料
@@ -30,7 +34,23 @@ func Get(c *gin.Context) {
 
 // 取得單一筆資料
 func GetOne(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		return
+	}
 
+	byteArray, err := json.Marshal(Data)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		return
+	}
+
+	gq := gojsonq.New().FromString(string(byteArray))
+	res := gq.Where("id", "=", id).Get()
+	fmt.Println(res)
+	c.JSON(http.StatusOK, res)
 }
 
 // 新增資料
